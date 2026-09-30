@@ -1,0 +1,32 @@
+import mongoose, { Document, Schema } from 'mongoose';
+
+export interface INote extends Document {
+  userId: mongoose.Types.ObjectId;
+  title: string;
+  content: string;
+  subject?: string;
+  topic?: string;
+  date?: string;
+  tags?: string[];
+  isPinned: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const NoteSchema = new Schema<INote>(
+  {
+    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
+    title: { type: String, required: true, trim: true },
+    content: { type: String, default: '' },
+    subject: { type: String, default: '' },
+    topic: { type: String, default: '' },
+    date: { type: String, default: '' },
+    tags: [{ type: String }],
+    isPinned: { type: Boolean, default: false },
+  },
+  { timestamps: true }
+);
+
+NoteSchema.index({ userId: 1, isPinned: -1, updatedAt: -1 });
+
+export const Note = mongoose.model<INote>('Note', NoteSchema);
