@@ -1,0 +1,12 @@
+{
+  "name": "winter-arc-tracker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Winter Arc Tracker - Personal Operating System for GATE 2027 & Life Transformation",
+  "scripts": {
+    "build": "cd backend && npm install && npm run build",
+    "start": "cd backend && npm start",
+    "build:frontend": "cd frontend && npm install && npm run build",
+    "build:backend": "cd backend && npm install && npm run build"
+  }
+}

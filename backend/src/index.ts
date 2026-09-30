@@ -42,13 +42,24 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // API Routes
 app.use('/api', apiRoutes);
 
-// Static frontend serving
+// Static frontend serving (if frontend dist exists)
+import fs from 'fs';
 const frontendDist = path.resolve(process.cwd(), '../frontend/dist');
-app.use(express.static(frontendDist));
-
-app.get('*', (req, res) => {
-  res.sendFile(path.join(frontendDist, 'index.html'));
-});
+if (fs.existsSync(frontendDist)) {
+  app.use(express.static(frontendDist));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(frontendDist, 'index.html'));
+  });
+} else {
+  app.get('/', (req, res) => {
+    res.json({
+      status: 'online',
+      service: 'Winter Arc Tracker API',
+      tagline: 'Execute every day. Become undeniable.',
+      docs: '/api/health'
+    });
+  });
+}
 
 // Start Server & Connect Database
 const startServer = async () => {
