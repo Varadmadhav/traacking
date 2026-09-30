@@ -4,6 +4,7 @@
   "private": true,
   "description": "Winter Arc Tracker - Personal Operating System for GATE 2027 & Life Transformation",
   "scripts": {
+    "postinstall": "cd backend && npm install && npm run build",
     "build": "cd backend && npm install && npm run build",
     "start": "cd backend && npm start",
     "build:frontend": "cd frontend && npm install && npm run build",
