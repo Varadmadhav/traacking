@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, CheckCircle2, Dumbbell, Zap, Flame } from 'lucide-react';
 import { ProteinEntry } from '../../types';
 
@@ -22,6 +22,20 @@ export const ProteinQuickTracker: React.FC<ProteinQuickTrackerProps> = ({
       { id: 'm-4', grams: 0, label: 'Meal 4' },
     ];
   });
+
+  // Sync state whenever parent passes updated entries (e.g. on fetch, date switch, quick action)
+  useEffect(() => {
+    if (entries && entries.length > 0) {
+      setMealList(entries);
+    } else {
+      setMealList([
+        { id: 'm-1', grams: 0, label: 'Meal 1' },
+        { id: 'm-2', grams: 0, label: 'Meal 2' },
+        { id: 'm-3', grams: 0, label: 'Meal 3' },
+        { id: 'm-4', grams: 0, label: 'Meal 4' },
+      ]);
+    }
+  }, [entries]);
 
   const [isSaving, setIsSaving] = useState(false);
   const [justSaved, setJustSaved] = useState(false);
@@ -135,7 +149,7 @@ export const ProteinQuickTracker: React.FC<ProteinQuickTrackerProps> = ({
             className="flex items-center gap-3 bg-dark-850/80 rounded-xl p-2.5 sm:px-3.5 border border-dark-750 focus-within:border-orange-500/50 transition"
           >
             <span className="text-xs font-mono font-bold text-slate-400 w-16 sm:w-20 shrink-0">
-              Meal {idx + 1}
+              {meal.label || `Meal ${idx + 1}`}
             </span>
 
             <div className="flex-1 flex items-center gap-1.5 bg-dark-950 rounded-lg px-3 py-1.5 border border-dark-700">

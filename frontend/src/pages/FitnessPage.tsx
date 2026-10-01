@@ -39,6 +39,10 @@ export const FitnessPage: React.FC = () => {
 
   useEffect(() => {
     fetchLog();
+
+    const handleRefresh = () => fetchLog();
+    window.addEventListener('winter_arc_updated', handleRefresh);
+    return () => window.removeEventListener('winter_arc_updated', handleRefresh);
   }, [selectedDate]);
 
   const handleSaveWorkout = async () => {

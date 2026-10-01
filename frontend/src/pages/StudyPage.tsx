@@ -49,6 +49,10 @@ export const StudyPage: React.FC = () => {
 
   useEffect(() => {
     fetchSessions();
+
+    const handleRefresh = () => fetchSessions();
+    window.addEventListener('winter_arc_updated', handleRefresh);
+    return () => window.removeEventListener('winter_arc_updated', handleRefresh);
   }, [selectedDate]);
 
   const handleDeleteSession = async (id: string) => {

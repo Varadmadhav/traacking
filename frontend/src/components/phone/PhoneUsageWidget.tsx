@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Smartphone, CheckCircle, AlertTriangle, Clock, Shield } from 'lucide-react';
 
 interface PhoneUsageWidgetProps {
@@ -33,6 +33,14 @@ export const PhoneUsageWidget: React.FC<PhoneUsageWidgetProps> = ({
   const [showBreakdown, setShowBreakdown] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
+
+  // Sync state with updated props
+  useEffect(() => {
+    setHours(Math.floor(totalMinutes / 60));
+    setMins(totalMinutes % 60);
+    setIgMins(instagramMinutes || 0);
+    setYtMins(youtubeMinutes || 0);
+  }, [totalMinutes, instagramMinutes, youtubeMinutes]);
 
   const calculatedTotal = hours * 60 + mins;
   const targetHours = Number((targetMinutes / 60).toFixed(1));

@@ -27,6 +27,14 @@ export const SleepCalculatorWidget: React.FC<SleepCalculatorWidgetProps> = ({
   const [isSaving, setIsSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
 
+  // Sync state whenever parent passes updated props (e.g. on fetch, date switch)
+  useEffect(() => {
+    if (sleptAt) setSleepTime(sleptAt);
+    if (wokeUpAt) setWakeTime(wokeUpAt);
+    if (qualityRating) setRating(qualityRating);
+    if (durationMinutes !== undefined) setCalculatedMins(durationMinutes);
+  }, [sleptAt, wokeUpAt, qualityRating, durationMinutes]);
+
   // Auto-calculate duration whenever times change
   useEffect(() => {
     if (!sleepTime || !wakeTime) return;

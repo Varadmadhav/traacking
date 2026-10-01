@@ -40,6 +40,10 @@ export const HabitsPage: React.FC = () => {
 
   useEffect(() => {
     fetchHabitsAndHeatmap();
+
+    const handleRefresh = () => fetchHabitsAndHeatmap();
+    window.addEventListener('winter_arc_updated', handleRefresh);
+    return () => window.removeEventListener('winter_arc_updated', handleRefresh);
   }, [selectedDate]);
 
   const handleToggleHabit = async (habitKey: string) => {

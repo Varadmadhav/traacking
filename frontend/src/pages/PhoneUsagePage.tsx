@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Smartphone, Shield } from 'lucide-react';
+import { Smartphone } from 'lucide-react';
 import { PhoneUsageWidget } from '../components/phone/PhoneUsageWidget';
 import { api } from '../services/api';
 import { useArcDate } from '../context/DateContext';
@@ -24,6 +24,10 @@ export const PhoneUsagePage: React.FC = () => {
 
   useEffect(() => {
     fetchLog();
+
+    const handleRefresh = () => fetchLog();
+    window.addEventListener('winter_arc_updated', handleRefresh);
+    return () => window.removeEventListener('winter_arc_updated', handleRefresh);
   }, [selectedDate]);
 
   return (
@@ -54,7 +58,10 @@ export const PhoneUsagePage: React.FC = () => {
         targetMinutes={(user?.phoneTargetHours || 2) * 60}
         notes={dailyLog?.phone?.notes || ''}
         onSave={async (phoneData) => {
-          await api.put(`/daily-log/${selectedDate}/phone`, phoneData);
+          const res = await api.put(`/daily-log/${selectedDate}/phone`, phoneData);
+          if (res.data.success && res.data.phone) {
+            setDailyLog((prev) => prev ? { ...prev, phone: res.data.phone } : null);
+          }
           fetchLog();
         }}
       />

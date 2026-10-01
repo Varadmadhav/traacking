@@ -30,6 +30,10 @@ export const RevisionsPage: React.FC = () => {
 
   useEffect(() => {
     fetchRevisions();
+
+    const handleRefresh = () => fetchRevisions();
+    window.addEventListener('winter_arc_updated', handleRefresh);
+    return () => window.removeEventListener('winter_arc_updated', handleRefresh);
   }, [statusFilter, selectedDate]);
 
   const handleComplete = async (id: string) => {

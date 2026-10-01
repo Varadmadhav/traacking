@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Moon, Sparkles, Clock } from 'lucide-react';
+import { Moon } from 'lucide-react';
 import { SleepCalculatorWidget } from '../components/sleep/SleepCalculatorWidget';
 import { api } from '../services/api';
 import { useArcDate } from '../context/DateContext';
@@ -24,6 +24,10 @@ export const SleepPage: React.FC = () => {
 
   useEffect(() => {
     fetchLog();
+
+    const handleRefresh = () => fetchLog();
+    window.addEventListener('winter_arc_updated', handleRefresh);
+    return () => window.removeEventListener('winter_arc_updated', handleRefresh);
   }, [selectedDate]);
 
   return (
@@ -55,7 +59,10 @@ export const SleepPage: React.FC = () => {
         notes={dailyLog?.sleep?.notes || ''}
         targetHours={user?.sleepTargetHours || 7.5}
         onSave={async (sleepData) => {
-          await api.put(`/daily-log/${selectedDate}/sleep`, sleepData);
+          const res = await api.put(`/daily-log/${selectedDate}/sleep`, sleepData);
+          if (res.data.success && res.data.sleep) {
+            setDailyLog((prev) => prev ? { ...prev, sleep: res.data.sleep } : null);
+          }
           fetchLog();
         }}
       />

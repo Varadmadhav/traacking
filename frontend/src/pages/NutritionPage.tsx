@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Flame, Zap } from 'lucide-react';
+import { Flame } from 'lucide-react';
 import { ProteinQuickTracker } from '../components/protein/ProteinQuickTracker';
 import { api } from '../services/api';
 import { useArcDate } from '../context/DateContext';
@@ -24,6 +24,10 @@ export const NutritionPage: React.FC = () => {
 
   useEffect(() => {
     fetchLog();
+
+    const handleRefresh = () => fetchLog();
+    window.addEventListener('winter_arc_updated', handleRefresh);
+    return () => window.removeEventListener('winter_arc_updated', handleRefresh);
   }, [selectedDate]);
 
   return (
@@ -51,7 +55,10 @@ export const NutritionPage: React.FC = () => {
         entries={dailyLog?.protein?.entries || []}
         targetGrams={user?.proteinTarget || 120}
         onSave={async (entries, target) => {
-          await api.put(`/daily-log/${selectedDate}/protein`, { entries, target });
+          const res = await api.put(`/daily-log/${selectedDate}/protein`, { entries, target });
+          if (res.data.success && res.data.protein) {
+            setDailyLog((prev) => prev ? { ...prev, protein: res.data.protein } : null);
+          }
           fetchLog();
         }}
       />

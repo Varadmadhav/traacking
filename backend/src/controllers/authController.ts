@@ -6,7 +6,7 @@ import { seedUserGatePlan } from '../services/seedService.js';
 
 const generateToken = (userId: string): string => {
   const secret = process.env.JWT_SECRET || 'winter_arc_secret_key_2026_gate_undeniable_token_secure_999';
-  const expiresIn = process.env.JWT_EXPIRES_IN || '30d';
+  const expiresIn = process.env.JWT_EXPIRES_IN || '365d';
   return jwt.sign({ id: userId }, secret, { expiresIn: expiresIn as any });
 };
 

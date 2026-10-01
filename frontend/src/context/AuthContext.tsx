@@ -17,9 +17,17 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(localStorage.getItem('winter_arc_token'));
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [user, setUser] = useState<User | null>(() => {
+    try {
+      const stored = localStorage.getItem('winter_arc_user');
+      return stored ? JSON.parse(stored) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  const [token, setToken] = useState<string | null>(() => localStorage.getItem('winter_arc_token'));
+  const [isLoading, setIsLoading] = useState<boolean>(!user && !!token);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -29,12 +37,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           const res = await api.get('/auth/me');
           if (res.data.success && res.data.user) {
             setUser(res.data.user);
-          } else {
+            localStorage.setItem('winter_arc_user', JSON.stringify(res.data.user));
+          }
+        } catch (err: any) {
+          console.error('Auth verification notice:', err?.message || err);
+          // Only clear session if server explicitly returned 401 Unauthorized
+          if (err?.response && err?.response?.status === 401) {
             logout();
           }
-        } catch (err) {
-          console.error('Auth verification failed:', err);
-          logout();
         }
       }
       setIsLoading(false);
@@ -48,6 +58,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const res = await api.post('/auth/login', { email, password });
       if (res.data.success) {
         localStorage.setItem('winter_arc_token', res.data.token);
+        localStorage.setItem('winter_arc_user', JSON.stringify(res.data.user));
         setToken(res.data.token);
         setUser(res.data.user);
         return { success: true };
@@ -66,6 +77,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const res = await api.post('/auth/register', { name, email, password, startDate, examDate });
       if (res.data.success) {
         localStorage.setItem('winter_arc_token', res.data.token);
+        localStorage.setItem('winter_arc_user', JSON.stringify(res.data.user));
         setToken(res.data.token);
         setUser(res.data.user);
         return { success: true };
@@ -91,6 +103,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const res = await api.put('/auth/profile', targets);
       if (res.data.success && res.data.user) {
         setUser(res.data.user);
+        localStorage.setItem('winter_arc_user', JSON.stringify(res.data.user));
         return true;
       }
       return false;
@@ -115,7 +128,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       value={{
         user,
         token,
-        isAuthenticated: !!user,
+        isAuthenticated: !!token || !!user,
         isLoading,
         login,
         register,

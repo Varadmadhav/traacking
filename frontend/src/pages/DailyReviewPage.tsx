@@ -36,6 +36,10 @@ export const DailyReviewPage: React.FC = () => {
 
   useEffect(() => {
     fetchSummary();
+
+    const handleRefresh = () => fetchSummary();
+    window.addEventListener('winter_arc_updated', handleRefresh);
+    return () => window.removeEventListener('winter_arc_updated', handleRefresh);
   }, [selectedDate]);
 
   const handleSubmitReview = async (e: React.FormEvent) => {

@@ -73,7 +73,14 @@ export const PYQPage: React.FC = () => {
   useEffect(() => {
     fetchAttempts();
     fetchErrorBook();
-  }, [errorStatusFilter, errorSearch]);
+
+    const handleRefresh = () => {
+      fetchAttempts();
+      fetchErrorBook();
+    };
+    window.addEventListener('winter_arc_updated', handleRefresh);
+    return () => window.removeEventListener('winter_arc_updated', handleRefresh);
+  }, [errorStatusFilter, errorSearch, selectedDate]);
 
   const handleCreateAttempt = async (e: React.FormEvent) => {
     e.preventDefault();
